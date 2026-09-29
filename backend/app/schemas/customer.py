@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 
-class Customer(BaseModel):
+class CreateCustomer(BaseModel):
     id: int
     name: str
     email: str
