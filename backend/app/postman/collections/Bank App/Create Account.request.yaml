@@ -1,0 +1,46 @@
+$kind: http-request
+method: POST
+url: '{{baseUrl}}/api/accounts'
+order: 3000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "userId": "{{userId}}",
+      "accountType": "checking"
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status code is 201", function () {
+          pm.response.to.have.status(201);
+      });
+
+      pm.test("Response has id, userId, balance, accountType, createdAt", function () {
+          const json = pm.response.json();
+          pm.expect(json).to.have.property("id");
+          pm.expect(json).to.have.property("userId");
+          pm.expect(json).to.have.property("balance");
+          pm.expect(json).to.have.property("accountType");
+          pm.expect(json).to.have.property("createdAt");
+      });
+
+      pm.test("accountType equals 'checking'", function () {
+          const json = pm.response.json();
+          pm.expect(json.accountType).to.eql("checking");
+      });
+
+      pm.test("balance starts at 0", function () {
+          const json = pm.response.json();
+          pm.expect(json.balance).to.eql(0);
+      });
+
+      pm.test("Save accountId to environment", function () {
+          const json = pm.response.json();
+          pm.expect(json.id).to.be.a("string");
+          pm.environment.set("accountId", json.id);
+      });

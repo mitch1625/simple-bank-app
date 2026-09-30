@@ -1,0 +1,14 @@
+name: Bank App - Local
+values:
+  - key: baseUrl
+    value: 'http://localhost:8000'
+    enabled: true
+  - key: userId
+    value: ''
+    enabled: true
+  - key: accountId
+    value: ''
+    enabled: true
+  - key: accountBalance
+    value: ''
+    enabled: true

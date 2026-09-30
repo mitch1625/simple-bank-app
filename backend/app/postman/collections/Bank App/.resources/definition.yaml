@@ -1,0 +1,3 @@
+$kind: collection
+name: Bank App
+description: API tests for the Bank App backend (FastAPI + MongoDB)

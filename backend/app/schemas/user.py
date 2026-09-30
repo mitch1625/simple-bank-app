@@ -1,16 +1,20 @@
-from pydantic import BaseModel, BeforeValidator, Field
 from typing import Annotated
+from pydantic import BaseModel, BeforeValidator, Field
 
 PyObjectId = Annotated[str, BeforeValidator(str)]
-class Customer(BaseModel):
+
+
+class User(BaseModel):
     id: PyObjectId = Field(validation_alias="_id")
     name: str
     email: str
 
-class CreateCustomer(BaseModel):
+
+class CreateUser(BaseModel):
     name: str
     email: str
 
-class UpdatedCustomer(BaseModel):
+
+class UpdatedUser(BaseModel):
     name: str
     email: str

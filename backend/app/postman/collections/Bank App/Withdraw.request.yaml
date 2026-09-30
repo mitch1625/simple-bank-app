@@ -1,0 +1,44 @@
+$kind: http-request
+method: POST
+url: '{{baseUrl}}/api/accounts/{{accountId}}/withdraw'
+order: 7000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "amount": 100.00
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status code is 200", function () {
+          pm.response.to.have.status(200);
+      });
+
+      pm.test("Response has id, userId, balance, accountType, createdAt", function () {
+          const json = pm.response.json();
+          pm.expect(json).to.have.property("id");
+          pm.expect(json).to.have.property("userId");
+          pm.expect(json).to.have.property("balance");
+          pm.expect(json).to.have.property("accountType");
+          pm.expect(json).to.have.property("createdAt");
+      });
+
+      pm.test("Balance decreased by withdrawal amount", function () {
+          const json = pm.response.json();
+          const prevBalance = pm.environment.get("accountBalance");
+          if (prevBalance !== undefined && prevBalance !== null) {
+              pm.expect(json.balance).to.eql(parseFloat(prevBalance) - 100);
+          } else {
+              pm.expect(json.balance).to.be.a("number");
+          }
+      });
+
+      pm.test("Save updated balance to environment", function () {
+          const json = pm.response.json();
+          pm.environment.set("accountBalance", json.balance);
+      });

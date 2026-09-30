@@ -1,0 +1,35 @@
+$kind: http-request
+method: GET
+url: '{{baseUrl}}/api/users/{{userId}}/accounts'
+order: 5000
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status code is 200", function () {
+          pm.response.to.have.status(200);
+      });
+
+      pm.test("Response is an array", function () {
+          const json = pm.response.json();
+          pm.expect(json).to.be.an("array");
+      });
+
+      pm.test("Each account has id, userId, balance, accountType, createdAt", function () {
+          const json = pm.response.json();
+          json.forEach(function (account) {
+              pm.expect(account).to.have.property("id");
+              pm.expect(account).to.have.property("userId");
+              pm.expect(account).to.have.property("balance");
+              pm.expect(account).to.have.property("accountType");
+              pm.expect(account).to.have.property("createdAt");
+          });
+      });
+
+      pm.test("All accounts belong to the correct user", function () {
+          const json = pm.response.json();
+          const userId = pm.environment.get("userId");
+          json.forEach(function (account) {
+              pm.expect(account.userId).to.eql(userId);
+          });
+      });

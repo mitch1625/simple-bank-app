@@ -10,4 +10,6 @@ client = AsyncMongoClient(MONGODB_URI)
 
 db = client["bank-app"]
 
-customer_collection = db["customers"]
+user_collection = db["users"]
+account_collection = db["accounts"]
+transaction_collection = db["transactions"]

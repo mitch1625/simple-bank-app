@@ -1,0 +1,31 @@
+$kind: http-request
+method: PUT
+url: '{{baseUrl}}/users/{{userId}}'
+order: 4000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "name": "Jane Doe",
+      "email": "jane.doe@example.com"
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status code is 200", function () {
+          pm.response.to.have.status(200);
+      });
+
+      pm.test("name equals 'Jane Doe'", function () {
+          const json = pm.response.json();
+          pm.expect(json.name).to.eql("Jane Doe");
+      });
+
+      pm.test("email equals 'jane.doe@example.com'", function () {
+          const json = pm.response.json();
+          pm.expect(json.email).to.eql("jane.doe@example.com");
+      });

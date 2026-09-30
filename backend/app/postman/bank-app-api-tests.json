@@ -1,0 +1,234 @@
+{
+  "collection": {
+    "name": "Bank App",
+    "description": "API tests for the Bank App backend (FastAPI + MongoDB)",
+    "requests": [
+      {
+        "name": "Get All Users",
+        "order": 1000,
+        "method": "GET",
+        "url": "{{baseUrl}}/users",
+        "headers": [],
+        "body": null,
+        "tests": [
+          "Status code is 200",
+          "Response is a JSON array",
+          "Each item has id, name, email fields"
+        ],
+        "scripts": {
+          "afterResponse": "pm.test(\"Status code is 200\", function () {\n    pm.response.to.have.status(200);\n});\n\npm.test(\"Response is a JSON array\", function () {\n    const json = pm.response.json();\n    pm.expect(json).to.be.an(\"array\");\n});\n\npm.test(\"Each item has id, name, email fields\", function () {\n    const json = pm.response.json();\n    if (json.length > 0) {\n        json.forEach(function (item) {\n            pm.expect(item).to.have.property(\"id\");\n            pm.expect(item).to.have.property(\"name\");\n            pm.expect(item).to.have.property(\"email\");\n        });\n    }\n});"
+        }
+      },
+      {
+        "name": "Create User",
+        "order": 2000,
+        "method": "POST",
+        "url": "{{baseUrl}}/users",
+        "headers": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "type": "json",
+          "content": {
+            "name": "John Doe",
+            "email": "john.doe@example.com"
+          }
+        },
+        "tests": [
+          "Status code is 201",
+          "Response body has id, name, email",
+          "name equals 'John Doe'",
+          "email equals 'john.doe@example.com'",
+          "Saves userId to environment variable"
+        ],
+        "scripts": {
+          "afterResponse": "pm.test(\"Status code is 201\", function () {\n    pm.response.to.have.status(201);\n});\n\npm.test(\"Response body has id, name, email\", function () {\n    const json = pm.response.json();\n    pm.expect(json).to.have.property(\"id\");\n    pm.expect(json).to.have.property(\"name\");\n    pm.expect(json).to.have.property(\"email\");\n});\n\npm.test(\"name equals 'John Doe'\", function () {\n    const json = pm.response.json();\n    pm.expect(json.name).to.eql(\"John Doe\");\n});\n\npm.test(\"email equals 'john.doe@example.com'\", function () {\n    const json = pm.response.json();\n    pm.expect(json.email).to.eql(\"john.doe@example.com\");\n});\n\npm.test(\"Save userId to environment\", function () {\n    const json = pm.response.json();\n    pm.expect(json.id).to.be.a(\"string\");\n    pm.environment.set(\"userId\", json.id);\n});"
+        }
+      },
+      {
+        "name": "Get User by ID",
+        "order": 3000,
+        "method": "GET",
+        "url": "{{baseUrl}}/users/{{userId}}",
+        "headers": [],
+        "body": null,
+        "tests": [
+          "Status code is 200",
+          "Response has id, name, email",
+          "id matches userId environment variable"
+        ],
+        "scripts": {
+          "afterResponse": "pm.test(\"Status code is 200\", function () {\n    pm.response.to.have.status(200);\n});\n\npm.test(\"Response has id, name, email\", function () {\n    const json = pm.response.json();\n    pm.expect(json).to.have.property(\"id\");\n    pm.expect(json).to.have.property(\"name\");\n    pm.expect(json).to.have.property(\"email\");\n});\n\npm.test(\"id matches userId environment variable\", function () {\n    const json = pm.response.json();\n    pm.expect(json.id).to.eql(pm.environment.get(\"userId\"));\n});"
+        }
+      },
+      {
+        "name": "Update User",
+        "order": 4000,
+        "method": "PUT",
+        "url": "{{baseUrl}}/users/{{userId}}",
+        "headers": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "type": "json",
+          "content": {
+            "name": "Jane Doe",
+            "email": "jane.doe@example.com"
+          }
+        },
+        "tests": [
+          "Status code is 200",
+          "name equals 'Jane Doe'",
+          "email equals 'jane.doe@example.com'"
+        ],
+        "scripts": {
+          "afterResponse": "pm.test(\"Status code is 200\", function () {\n    pm.response.to.have.status(200);\n});\n\npm.test(\"name equals 'Jane Doe'\", function () {\n    const json = pm.response.json();\n    pm.expect(json.name).to.eql(\"Jane Doe\");\n});\n\npm.test(\"email equals 'jane.doe@example.com'\", function () {\n    const json = pm.response.json();\n    pm.expect(json.email).to.eql(\"jane.doe@example.com\");\n});"
+        }
+      },
+      {
+        "name": "Delete User",
+        "order": 5000,
+        "method": "DELETE",
+        "url": "{{baseUrl}}/users/{{userId}}",
+        "headers": [],
+        "body": null,
+        "tests": [
+          "Status code is 204"
+        ],
+        "scripts": {
+          "afterResponse": "pm.test(\"Status code is 204\", function () {\n    pm.response.to.have.status(204);\n});"
+        }
+      },
+      {
+        "name": "Create Account",
+        "order": 6000,
+        "method": "POST",
+        "url": "{{baseUrl}}/api/accounts",
+        "headers": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "type": "json",
+          "content": {
+            "userId": "{{userId}}",
+            "accountType": "checking"
+          }
+        },
+        "tests": [
+          "Status code is 201",
+          "Response has id, userId, balance, accountType, createdAt",
+          "balance is 0",
+          "accountType equals 'checking'",
+          "Saves accountId to environment variable"
+        ],
+        "scripts": {
+          "afterResponse": "pm.test(\"Status code is 201\", function () {\n    pm.response.to.have.status(201);\n});\n\npm.test(\"Response has id, userId, balance, accountType, createdAt\", function () {\n    const json = pm.response.json();\n    pm.expect(json).to.have.property(\"id\");\n    pm.expect(json).to.have.property(\"userId\");\n    pm.expect(json).to.have.property(\"balance\");\n    pm.expect(json).to.have.property(\"accountType\");\n    pm.expect(json).to.have.property(\"createdAt\");\n});\n\npm.test(\"balance is 0\", function () {\n    const json = pm.response.json();\n    pm.expect(json.balance).to.eql(0);\n});\n\npm.test(\"accountType equals 'checking'\", function () {\n    const json = pm.response.json();\n    pm.expect(json.accountType).to.eql(\"checking\");\n});\n\npm.test(\"Save accountId to environment\", function () {\n    const json = pm.response.json();\n    pm.expect(json.id).to.be.a(\"string\");\n    pm.environment.set(\"accountId\", json.id);\n});"
+        }
+      },
+      {
+        "name": "Get Account by ID",
+        "order": 7000,
+        "method": "GET",
+        "url": "{{baseUrl}}/api/accounts/{{accountId}}",
+        "headers": [],
+        "body": null,
+        "tests": [
+          "Status code is 200",
+          "Response has id, userId, balance, accountType, createdAt",
+          "id matches accountId environment variable"
+        ],
+        "scripts": {
+          "afterResponse": "pm.test(\"Status code is 200\", function () {\n    pm.response.to.have.status(200);\n});\n\npm.test(\"Response has id, userId, balance, accountType, createdAt\", function () {\n    const json = pm.response.json();\n    pm.expect(json).to.have.property(\"id\");\n    pm.expect(json).to.have.property(\"userId\");\n    pm.expect(json).to.have.property(\"balance\");\n    pm.expect(json).to.have.property(\"accountType\");\n    pm.expect(json).to.have.property(\"createdAt\");\n});\n\npm.test(\"id matches accountId environment variable\", function () {\n    const json = pm.response.json();\n    pm.expect(json.id).to.eql(pm.environment.get(\"accountId\"));\n});"
+        }
+      },
+      {
+        "name": "Get User Accounts",
+        "order": 8000,
+        "method": "GET",
+        "url": "{{baseUrl}}/api/users/{{userId}}/accounts",
+        "headers": [],
+        "body": null,
+        "tests": [
+          "Status code is 200",
+          "Response is a JSON array",
+          "Each item has id, userId, balance, accountType, createdAt",
+          "All accounts belong to the user"
+        ],
+        "scripts": {
+          "afterResponse": "pm.test(\"Status code is 200\", function () {\n    pm.response.to.have.status(200);\n});\n\npm.test(\"Response is a JSON array\", function () {\n    const json = pm.response.json();\n    pm.expect(json).to.be.an(\"array\");\n});\n\npm.test(\"Each item has id, userId, balance, accountType, createdAt\", function () {\n    const json = pm.response.json();\n    if (json.length > 0) {\n        json.forEach(function (item) {\n            pm.expect(item).to.have.property(\"id\");\n            pm.expect(item).to.have.property(\"userId\");\n            pm.expect(item).to.have.property(\"balance\");\n            pm.expect(item).to.have.property(\"accountType\");\n            pm.expect(item).to.have.property(\"createdAt\");\n        });\n    }\n});\n\npm.test(\"All accounts belong to the user\", function () {\n    const json = pm.response.json();\n    const userId = pm.environment.get(\"userId\");\n    json.forEach(function (item) {\n        pm.expect(item.userId).to.eql(userId);\n    });\n});"
+        }
+      },
+      {
+        "name": "Deposit",
+        "order": 9000,
+        "method": "POST",
+        "url": "{{baseUrl}}/api/accounts/{{accountId}}/deposit",
+        "headers": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "type": "json",
+          "content": {
+            "amount": 500.00
+          }
+        },
+        "tests": [
+          "Status code is 200",
+          "Response has id, userId, balance, accountType, createdAt",
+          "balance equals 500"
+        ],
+        "scripts": {
+          "afterResponse": "pm.test(\"Status code is 200\", function () {\n    pm.response.to.have.status(200);\n});\n\npm.test(\"Response has id, userId, balance, accountType, createdAt\", function () {\n    const json = pm.response.json();\n    pm.expect(json).to.have.property(\"id\");\n    pm.expect(json).to.have.property(\"userId\");\n    pm.expect(json).to.have.property(\"balance\");\n    pm.expect(json).to.have.property(\"accountType\");\n    pm.expect(json).to.have.property(\"createdAt\");\n});\n\npm.test(\"balance equals 500\", function () {\n    const json = pm.response.json();\n    pm.expect(json.balance).to.eql(500);\n});"
+        }
+      },
+      {
+        "name": "Withdraw",
+        "order": 10000,
+        "method": "POST",
+        "url": "{{baseUrl}}/api/accounts/{{accountId}}/withdraw",
+        "headers": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "type": "json",
+          "content": {
+            "amount": 200.00
+          }
+        },
+        "tests": [
+          "Status code is 200",
+          "Response has id, userId, balance, accountType, createdAt",
+          "balance equals 300 after withdrawal"
+        ],
+        "scripts": {
+          "afterResponse": "pm.test(\"Status code is 200\", function () {\n    pm.response.to.have.status(200);\n});\n\npm.test(\"Response has id, userId, balance, accountType, createdAt\", function () {\n    const json = pm.response.json();\n    pm.expect(json).to.have.property(\"id\");\n    pm.expect(json).to.have.property(\"userId\");\n    pm.expect(json).to.have.property(\"balance\");\n    pm.expect(json).to.have.property(\"accountType\");\n    pm.expect(json).to.have.property(\"createdAt\");\n});\n\npm.test(\"balance equals 300 after withdrawal\", function () {\n    const json = pm.response.json();\n    pm.expect(json.balance).to.eql(300);\n});"
+        }
+      },
+      {
+        "name": "Get Account Transactions",
+        "order": 11000,
+        "method": "GET",
+        "url": "{{baseUrl}}/api/accounts/{{accountId}}/transactions",
+        "headers": [],
+        "body": null,
+        "tests": [
+          "Status code is 200",
+          "Response is a JSON array",
+          "Each transaction has id, accountId, txnType, amount, createdAt",
+          "Transaction list has at least 2 entries (deposit + withdrawal)"
+        ],
+        "scripts": {
+          "afterResponse": "pm.test(\"Status code is 200\", function () {\n    pm.response.to.have.status(200);\n});\n\npm.test(\"Response is a JSON array\", function () {\n    const json = pm.response.json();\n    pm.expect(json).to.be.an(\"array\");\n});\n\npm.test(\"Each transaction has id, accountId, txnType, amount, createdAt\", function () {\n    const json = pm.response.json();\n    if (json.length > 0) {\n        json.forEach(function (item) {\n            pm.expect(item).to.have.property(\"id\");\n            pm.expect(item).to.have.property(\"accountId\");\n            pm.expect(item).to.have.property(\"txnType\");\n            pm.expect(item).to.have.property(\"amount\");\n            pm.expect(item).to.have.property(\"createdAt\");\n        });\n    }\n});\n\npm.test(\"Transaction list has at least 2 entries (deposit + withdrawal)\", function () {\n    const json = pm.response.json();\n    pm.expect(json.length).to.be.at.least(2);\n});"
+        }
+      }
+    ]
+  },
+  "environment": {
+    "name": "Bank App - Local",
+    "variables": {
+      "baseUrl": "http://localhost:8000",
+      "userId": "",
+      "accountId": ""
+    }
+  }
+}

@@ -1,0 +1,240 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "bank-app",
+    "version": "1.0.0",
+    "description": "API tests for the Bank App backend (FastAPI + MongoDB)"
+  },
+  "servers": [
+    {
+      "url": "{{baseUrl}}"
+    }
+  ],
+  "paths": {
+    "/users": {
+      "get": {
+        "summary": "Get All Users",
+        "responses": {}
+      },
+      "post": {
+        "summary": "Create User",
+        "responses": {},
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  }
+                }
+              },
+              "example": {
+                "name": "John Doe",
+                "email": "john.doe@example.com"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/accounts": {
+      "post": {
+        "summary": "Create Account",
+        "responses": {},
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "userId": {
+                    "type": "string"
+                  },
+                  "accountType": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "userId": "{{userId}}",
+                "accountType": "checking"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{userId}": {
+      "get": {
+        "summary": "Get User by ID",
+        "responses": {}
+      },
+      "parameters": [
+        {
+          "name": "userId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          },
+          "example": "{{userId}}"
+        }
+      ],
+      "put": {
+        "summary": "Update User",
+        "responses": {},
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  }
+                }
+              },
+              "example": {
+                "name": "Jane Doe",
+                "email": "jane.doe@example.com"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete User",
+        "responses": {}
+      }
+    },
+    "/api/accounts/{accountId}": {
+      "get": {
+        "summary": "Get Account by ID",
+        "responses": {}
+      },
+      "parameters": [
+        {
+          "name": "accountId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          },
+          "example": "{{accountId}}"
+        }
+      ]
+    },
+    "/api/users/{userId}/accounts": {
+      "get": {
+        "summary": "Get User Accounts",
+        "responses": {}
+      },
+      "parameters": [
+        {
+          "name": "userId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          },
+          "example": "{{userId}}"
+        }
+      ]
+    },
+    "/api/accounts/{accountId}/deposit": {
+      "post": {
+        "summary": "Deposit",
+        "responses": {},
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "amount": {
+                    "type": "integer"
+                  }
+                }
+              },
+              "example": {
+                "amount": 500
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "name": "accountId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          },
+          "example": "{{accountId}}"
+        }
+      ]
+    },
+    "/api/accounts/{accountId}/withdraw": {
+      "post": {
+        "summary": "Withdraw",
+        "responses": {},
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "amount": {
+                    "type": "integer"
+                  }
+                }
+              },
+              "example": {
+                "amount": 100
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "name": "accountId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          },
+          "example": "{{accountId}}"
+        }
+      ]
+    },
+    "/api/accounts/{accountId}/transactions": {
+      "get": {
+        "summary": "Get Account Transactions",
+        "responses": {}
+      },
+      "parameters": [
+        {
+          "name": "accountId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          },
+          "example": "{{accountId}}"
+        }
+      ]
+    }
+  }
+}

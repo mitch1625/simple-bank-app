@@ -1,7 +1,12 @@
+from beanie import init_beanie
 from fastapi import FastAPI
-from routes.customers import router
+from routes.users import router as users_router
+from routes.accounts import router as accounts_router
 from contextlib import asynccontextmanager
-from database import client
+from models.user import User
+from models.account import Account
+from models.transaction import Transaction
+from database import client, db
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -9,6 +14,8 @@ async def lifespan(app: FastAPI):
     await client.admin.command("ping")
     print("Connected to MongoDB")
 
+    await init_beanie(database=db, document_models=[User, Account, Transaction])
+    
     yield
 
     # Close MongoDB connection when FastAPI shuts down
@@ -17,4 +24,5 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
-app.include_router(router)
+app.include_router(users_router)
+app.include_router(accounts_router)

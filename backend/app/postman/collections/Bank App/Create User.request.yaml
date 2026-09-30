@@ -1,0 +1,44 @@
+$kind: http-request
+method: POST
+url: '{{baseUrl}}/users'
+order: 2000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "name": "John Doe",
+      "email": "john.doe@example.com"
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status code is 201", function () {
+          pm.response.to.have.status(201);
+      });
+
+      pm.test("Response body has id, name, email", function () {
+          const json = pm.response.json();
+          pm.expect(json).to.have.property("id");
+          pm.expect(json).to.have.property("name");
+          pm.expect(json).to.have.property("email");
+      });
+
+      pm.test("name equals 'John Doe'", function () {
+          const json = pm.response.json();
+          pm.expect(json.name).to.eql("John Doe");
+      });
+
+      pm.test("email equals 'john.doe@example.com'", function () {
+          const json = pm.response.json();
+          pm.expect(json.email).to.eql("john.doe@example.com");
+      });
+
+      pm.test("Save userId to environment", function () {
+          const json = pm.response.json();
+          pm.expect(json.id).to.be.a("string");
+          pm.environment.set("userId", json.id);
+      });

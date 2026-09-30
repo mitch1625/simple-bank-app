@@ -1,0 +1,10 @@
+workspace:
+  id: 54422c68-f922-4bac-88f6-6e3ee10bb72d
+localResources:
+  specs:
+    - ../postman/specs/simple-bank-app/simple-bank-app.json
+    - ../postman/specs/bank-app/bank-app.json
+resourceNameMappings:
+  specs:
+    - ../postman/specs/simple-bank-app/simple-bank-app.json: simple-bank-app
+    - ../postman/specs/bank-app/bank-app.json: bank-app

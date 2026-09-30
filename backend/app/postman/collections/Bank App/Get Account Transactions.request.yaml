@@ -1,0 +1,34 @@
+$kind: http-request
+method: GET
+url: '{{baseUrl}}/api/accounts/{{accountId}}/transactions'
+order: 8000
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status code is 200", function () {
+          pm.response.to.have.status(200);
+      });
+
+      pm.test("Response is an array", function () {
+          const json = pm.response.json();
+          pm.expect(json).to.be.an("array");
+      });
+
+      pm.test("Each transaction has expected fields", function () {
+          const json = pm.response.json();
+          json.forEach(function (tx) {
+              pm.expect(tx).to.have.property("id");
+              pm.expect(tx).to.have.property("accountId");
+              pm.expect(tx).to.have.property("amount");
+              pm.expect(tx).to.have.property("type");
+              pm.expect(tx).to.have.property("createdAt");
+          });
+      });
+
+      pm.test("Transaction types are deposit or withdrawal", function () {
+          const json = pm.response.json();
+          json.forEach(function (tx) {
+              pm.expect(["deposit", "withdrawal"]).to.include(tx.type);
+          });
+      });
