@@ -1,20 +1,47 @@
 from data import Customers
+from database import customer_collection
+from bson import ObjectId
+from bson.errors import InvalidId
+from pymongo import ReturnDocument
 
 class CustomerRepository:
-    def get_all(self):
-        return Customers
+    async def get_all(self):
+        return await customer_collection.find().to_list(length=None)
+    
+    async def get_by_id(self, customer_id:str):
+        try:
+            oid = ObjectId(customer_id)
+        except InvalidId:
+            return None
 
-    def get_by_id(self, customer_id:int):
-        return Customers.get(customer_id)
+        return await customer_collection.find_one({"_id" : oid})
 
-    def create(self, customer: dict):
-        Customers[customer["id"]] = customer
+    async def get_by_email(self, email:str):
+        return await customer_collection.find_one({"email" : email})
+    
+    async def get_by_email(self, email:str):
+        return await customer_collection.find_one({"email" : email})
+    
+    async def create(self, customer: dict):
+        return await customer_collection.insert_one(customer)
 
-    def update(self, customer_id:int, customer:dict):
-        Customers[customer_id] = customer
+    async def update(self, customer_id:str, data:dict):
+        try:
+            oid = ObjectId(customer_id)
+        except InvalidId:
+            return None
+        await customer_collection.update_one(
+            {"_id" : oid},
+            {"$set" : data},
+        )
+        return await customer_collection.find_one({"_id" : oid})
 
-    def delete(self, customer_id:int):
-        del Customers[customer_id]
-
+    async def delete(self, customer_id:str):
+        try:
+            oid = ObjectId(customer_id)
+        except InvalidId:
+            return None
+        result = await customer_collection.delete_one({"_id" : oid})
+        return result.deleted_count == 1
 
 customer_repository = CustomerRepository()

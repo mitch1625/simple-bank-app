@@ -1,40 +1,46 @@
 from repositories.customer_repository import customer_repository
 from schemas.customer import CreateCustomer, UpdatedCustomer
+from fastapi import HTTPException
 
 class CustomerService:
 
-    def get_all(self):
-        return customer_repository.get_all()
+    async def get_all(self):
+        return await customer_repository.get_all()
 
-    def get_by_id(self, customer_id: int):
-        customer = customer_repository.get_by_id(customer_id)
-        return customer
+    async def get_by_id(self, customer_id: str):
+        return await customer_repository.get_by_id(customer_id)
 
-    def create(self, new_customer: CreateCustomer):
-        ### This is wrong b/c DB implementation not done yet. Schema will change
-        existing_customer = customer_repository.get_by_id(new_customer.id)
+
+    async def create(self, new_customer: CreateCustomer):
+        existing_customer = await customer_repository.get_by_email(new_customer.email)
         if existing_customer:
-            raise ValueError("Customer with that email already exists")
-
-        customer_repository.create(new_customer.model_dump())
+            raise HTTPException(
+                status_code=409,
+                detail="Customer with that email already exists"
+            )
+        await customer_repository.create(new_customer.model_dump())
         return {"message" : "Customer created"}
 
-    def update(self, customer_id: int, name: str, email: str):
-        customer = customer_repository.get_by_id(customer_id)
+    async def update(self, customer_id: str, data: UpdatedCustomer):
+        customer = await customer_repository.get_by_id(customer_id)
 
         if customer is None:
             return None
-        customer['name'] = name
-        customer['email'] = email
+        existing_email = await customer_repository.get_by_email(data.email)
+        if existing_email and str(existing_email["_id"]) != customer_id:
+            raise HTTPException(
+                status_code=409,
+                detail="Cannot use duplicate emails"
+            )
+        return await customer_repository.update(customer_id, data.model_dump())
 
-        customer_repository.update(customer_id, customer)
-        return customer
     
-    def delete(self, customer_id: int):
-        customer = customer_repository.get_by_id(customer_id)
+    async def delete(self, customer_id: str):
+        customer = await customer_repository.get_by_id(customer_id)
+        print(customer)
         if customer is None:
             return None
-        customer_repository.delete(customer_id)
-        return True
+        return await customer_repository.delete(customer_id)
+        
 
 customer_service = CustomerService()
