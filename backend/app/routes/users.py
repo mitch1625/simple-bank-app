@@ -19,7 +19,7 @@ async def get_user_by_id(user_id: str):
     return user
 
 
-@router.post("/users", status_code=201)
+@router.post("/users", response_model=User, status_code=201)
 async def create_user(new_user: CreateUser):
     return await user_service.create(new_user)
 

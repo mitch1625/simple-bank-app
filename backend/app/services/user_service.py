@@ -17,8 +17,8 @@ class UserService:
                 status_code=409,
                 detail="User with that email already exists",
             )
-        await user_repository.create(new_user.model_dump())
-        return {"message": "User created"}
+        result = await user_repository.create(new_user.model_dump())
+        return await user_repository.get_by_id(str(result.inserted_id))
 
     async def update(self, user_id: str, data: UpdatedUser):
         user = await user_repository.get_by_id(user_id)
