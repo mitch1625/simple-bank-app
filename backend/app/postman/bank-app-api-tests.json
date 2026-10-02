@@ -7,7 +7,7 @@
         "name": "Get All Users",
         "order": 1000,
         "method": "GET",
-        "url": "{{baseUrl}}/users",
+        "url": "{{baseUrl}}/api/users",
         "headers": [],
         "body": null,
         "tests": [
@@ -23,7 +23,7 @@
         "name": "Create User",
         "order": 2000,
         "method": "POST",
-        "url": "{{baseUrl}}/users",
+        "url": "{{baseUrl}}/api/users",
         "headers": [
           { "key": "Content-Type", "value": "application/json" }
         ],
@@ -49,7 +49,7 @@
         "name": "Get User by ID",
         "order": 3000,
         "method": "GET",
-        "url": "{{baseUrl}}/users/{{userId}}",
+        "url": "{{baseUrl}}/api/users/{{userId}}",
         "headers": [],
         "body": null,
         "tests": [
@@ -65,7 +65,7 @@
         "name": "Update User",
         "order": 4000,
         "method": "PUT",
-        "url": "{{baseUrl}}/users/{{userId}}",
+        "url": "{{baseUrl}}/api/users/{{userId}}",
         "headers": [
           { "key": "Content-Type", "value": "application/json" }
         ],
@@ -89,7 +89,7 @@
         "name": "Delete User",
         "order": 5000,
         "method": "DELETE",
-        "url": "{{baseUrl}}/users/{{userId}}",
+        "url": "{{baseUrl}}/api/users/{{userId}}",
         "headers": [],
         "body": null,
         "tests": [
