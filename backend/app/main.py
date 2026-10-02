@@ -1,3 +1,4 @@
+import os
 from beanie import init_beanie
 from fastapi import FastAPI
 from routes.users import router as users_router
@@ -8,7 +9,7 @@ from models.account import Account
 from models.transaction import Transaction
 from database import client, db
 from fastapi.middleware.cors import CORSMiddleware
-
+from mangum import Mangum
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Verify MongoDB connection when FastAPI starts
@@ -20,8 +21,9 @@ async def lifespan(app: FastAPI):
     yield
 
     # Close MongoDB connection when FastAPI shuts down
-    await client.close()
-    print("Disconnected from MongoDB")
+    if not os.getenv("AWS_LAMBDA_FUNCTION_NAME"):
+        await client.close()
+        print("Disconnected from MongoDB")
 
 app = FastAPI(lifespan=lifespan)
 
@@ -38,3 +40,5 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+handler = Mangum(app)
